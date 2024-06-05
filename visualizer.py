@@ -195,7 +195,6 @@ for object in leveldata:
                             level_array[object['y_pos'] + i][object['x_pos']] = 2
 
 
-# draw tiles based on the 2d array
 for row in range(len(level_array)):
     for col in range(len(level_array[row])):
         tile_type = level_array[row][col]
@@ -206,6 +205,5 @@ for row in range(len(level_array)):
         y0 = row * tile_size
         image.paste(tile_img.convert("RGBA"), (x0, y0), tile_img.convert("RGBA"))
 
-# save or display the image
 image.show()
 image.save('output.png')
