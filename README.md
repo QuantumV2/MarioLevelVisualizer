@@ -10,7 +10,7 @@ Then, go into its directory.
 `cd MarioLevelVisualizer`  
 
 Then, install the requirements (theres only two packages, so it shouldn't take long)  
-`pip install requirements.txt`  
+`pip install -r requirements.txt`  
 
 Now, pass in the path to your desired file to the visualizer.py file.  
 `py visualizer.py "path/to/your/file.bin"`  
