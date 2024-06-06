@@ -13,10 +13,10 @@ Then, install the requirements (theres only two packages, so it shouldn't take l
 `pip install -r requirements.txt`  
 
 Now, pass in the path to your desired file to the visualizer.py file.  
-`py visualizer.py "path/to/your/file.bin"`  
+`python visualizer.py "path/to/your/file.bin"`  
 
 You can use test.bin as a test, it includes 1-1.  
-`py visualizer.py test.bin`  
+`python visualizer.py test.bin`  
 
 You should get output like this:  
 ![output](https://github.com/QuantumV2/MarioLevelVisualizer/assets/83087109/1171ae09-8d70-42e6-9cd7-747357885af4)
