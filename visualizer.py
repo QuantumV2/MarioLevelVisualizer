@@ -1,7 +1,7 @@
 import levelparser
 from levelparser import floor_pattern_names
 import sys
-from PIL import Image#, ImageFont, ImageDraw
+from PIL import Image, ImageDraw#, ImageFont
 import numpy as np
 import os
 #import random
@@ -17,15 +17,14 @@ def paste_subarray(arr1, arr2, start_row, start_col, start_row_arr2, start_col_a
 
     return arr1
 
-#font = ImageFont.truetype("C:\\Users\\\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ARCADECLASSIC.TTF", 16)
+#font = ImageFont.truetype("C:\\Users\\zonic\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ARCADECLASSIC.TTF", 16)
 requestedfile = sys.argv[1]
 leveldata = levelparser.parse_binary_file(requestedfile)
-for obj in leveldata:
-    print(obj)
+print(leveldata[0])
 desired_color = (0x92, 0x90, 0xff)
 if(leveldata[0]['backdrop'] in ['Snowy Night', 'Fully Gray Night', 'Night Default',]):
     desired_color = (0x00,0x00,0x00)
-image = Image.new(mode="RGBA", size=((int(leveldata[-1]['total_pages']) + 1) * 256, 240), color=desired_color)
+image = Image.new(mode="RGBA", size=((int(leveldata[-1]['total_pages']) + 2) * 256, 240), color=desired_color)
 bg = Image.open(os.path.join("backgrounds", f"{leveldata[0]['background']}.png"))
 for i in range(0, image.width, bg.width):
     image.paste(bg, (i, 32), bg)
@@ -63,6 +62,18 @@ tile_images = {
     23: Image.open('chunkids/23.png'),
     24: Image.open('chunkids/24.png'),
     25: Image.open('chunkids/25.png'),
+    26: Image.open('chunkids/26.png'),
+    27: Image.open('chunkids/27.png'),
+    28: Image.open('chunkids/28.png'),
+    29: Image.open('chunkids/29.png'),
+    30: Image.open('chunkids/30.png'),
+    31: Image.open('chunkids/31.png'),
+    32: Image.open('chunkids/32.png'),
+    33: Image.open('chunkids/33.png'),
+    34: Image.open('chunkids/34.png'),
+    35: Image.open('chunkids/35.png'),
+    36: Image.open('chunkids/36.png'),
+    37: Image.open('chunkids/37.png'),
 }
 castle_tiledata = [
     [00,19,19,19,00],
@@ -73,7 +84,7 @@ castle_tiledata = [
     [20,20,20,20,20],
     [23,21,23,21,23],
     [23,25,23,25,23],
-    [20,20,20,20,20],
+    [23,23,23,23,23],
     [21,23,21,23,21],
     [25,23,25,23,25],
 ]
@@ -82,15 +93,22 @@ castle_tiledata = [
 for object in leveldata:
 
     if object != leveldata[0] and object != leveldata[-1]:
-        if(object['y_pos'] > 11):
+        if object['y_pos'] > 11:
             if object['y_pos'] == 14:
-                #print("yo")
-                for i in range(len(level_array[0]) - object['x_pos'] - 1):
-                    for j in range(15):
-                        if(floor_pattern_names[str(object['obj_size'])][j] == '1'):
-                            level_array[j][object['x_pos'] + i + 1] = '1'
-                        elif int(level_array[j][object['x_pos'] + i]) <= 1:
-                            level_array[j][object['x_pos'] + i + 1] = '0 '
+                if (object['obj_type'] >> 2) & 0b001 == 1:
+                    if object['obj_size'] & 0b0111 == 0b010:
+                        x_start = ((object['x_pos'] + 1) * 16)
+                        bg = Image.open(os.path.join("backgrounds", "CastleWalls.png"))
+                        for i in range(x_start, image.width, bg.width):
+                            image.paste(bg, (i, 32), bg)
+                else:
+                    for i in range(len(level_array[0]) - object['x_pos'] - 1):
+
+                        for j in range(15):
+                            if(floor_pattern_names[str(object['obj_size'])][j] == '1'):
+                                level_array[j][object['x_pos'] + i + 1] = '1'
+                            elif int(level_array[j][object['x_pos'] + i]) <= 1:
+                                level_array[j][object['x_pos'] + i + 1] = '0 '
             elif(object['y_pos'] == 0b1100):
                 match object['obj_type']:
                     case 0: # HOLE
@@ -142,7 +160,8 @@ for object in leveldata:
                                 except:
                                     pass
                     case 2:
-                        paste_subarray(level_array, castle_tiledata, (object['obj_size'] - 2) + 4, object['x_pos'], 0, 0, object['obj_size'] - 2, 5)
+                        print((len(level_array) - object['obj_size']) - 1)
+                        paste_subarray(level_array, castle_tiledata, (13 - (len(castle_tiledata) - object['obj_size'])) , object['x_pos'], 0, 0, len(castle_tiledata) - object['obj_size'] - 1, 5)
             elif object['y_pos'] == 0b1101:
                 subtype = object['obj_type'] >> 2 & 0b001
                 subsubtype = object['obj_size']
@@ -192,6 +211,44 @@ for object in leveldata:
         else:
             object['y_pos'] += 2
             match object['obj_type']:
+                case 1:
+                    if(leveldata[0]['tile_and_special_platform'] in ['Normal Block, Green Pipe, Tree', 'Cloud Block, Green Pipe, Tree']):
+                        for i in range(object['obj_size'] + 1):
+                            if(object['x_pos'] + i < len(level_array[0])):
+                                if(i == 0):
+                                    level_array[object['y_pos']][object['x_pos'] + i] = '26'
+                                elif(i == object['obj_size']):
+                                    level_array[object['y_pos']][object['x_pos'] + i] = '28'
+                                else:
+                                    level_array[object['y_pos']][object['x_pos'] + i] = '27'
+                                    for j in range(1, len(level_array) - object['y_pos']):
+                                        if(level_array[object['y_pos'] + j][object['x_pos'] + i] not in ['26', '27', '28']):
+                                            level_array[object['y_pos'] + j][object['x_pos'] + i] = '29'
+                    elif (leveldata[0]['tile_and_special_platform'] == 'Normal Block, Orange Pipe, Mushroom'):
+                        for i in range(object['obj_size'] + 1):
+                            if(object['x_pos'] + i < len(level_array[0])):
+                                if(i == 0):
+                                    level_array[object['y_pos']][object['x_pos'] + i] = '30'
+                                elif(i == object['obj_size']):
+                                    level_array[object['y_pos']][object['x_pos'] + i] = '32'
+                                else:
+                                    level_array[object['y_pos']][object['x_pos'] + i] = '31'
+                                    for j in range(1, len(level_array) - object['y_pos']):
+                                        if(level_array[object['y_pos'] + j][object['x_pos'] + i] not in ['30', '31', '32'] and object['obj_size'] / i == 2):
+                                            if(j == 1):
+                                                level_array[object['y_pos'] + j][object['x_pos'] + i] = '33' 
+                                            else:
+                                                level_array[object['y_pos'] + j][object['x_pos'] + i] = '34' 
+                    else: 
+                        for i in range(object['obj_size'] + 1):
+                            if(object['y_pos'] + i < len(level_array)):
+                                if(i == 0):
+                                    level_array[object['y_pos'] + i][object['x_pos']] = '35'
+                                elif(i == 1):
+                                    level_array[object['y_pos'] + i][object['x_pos']] = '36'
+                                else:
+                                    level_array[object['y_pos'] + i][object['x_pos']] = '37'
+                        
                 case 2: # Bricks HOR ROW
                     for i in range(object['obj_size'] + 1):
                         if(object['x_pos'] + i < len(level_array[0])):
@@ -236,12 +293,17 @@ for row in range(len(level_array)):
         tile_img = tile_images[int(tile_type)]
         x0 = col * tile_size
         y0 = row * tile_size
+        img1 = ImageDraw.Draw(image)
+        img1.rectangle((x0, y0, x0 + 15, y0 + 15), fill=desired_color)
         image.paste(tile_img.convert("RGBA"), (x0, y0), tile_img.convert("RGBA"))
         #for object in leveldata:
 
             #if object != leveldata[0] and object != leveldata[-1]:
                 #draw = ImageDraw.Draw(image)
                 #draw.text((object['x_pos'] * 16, (object['y_pos'] if object['y_pos'] < 12 else 0) * 16),f"{object['raw_data'][0] + object['raw_data'][1] }",(random.randrange(0, 255),random.randrange(0, 255),random.randrange(0, 255)),font=font)
+mario = Image.open('chunkids/mario.png')
+image.paste(mario.convert("RGBA"), (24 + 16, (int(leveldata[0]['start_location_y']) * 16) + 16), mario.convert("RGBA"))
+    
 
 image.show()
 image.save('output.png')
