@@ -3,6 +3,7 @@ from levelparser import floor_pattern_names
 import sys
 from PIL import Image#, ImageFont, ImageDraw
 import numpy as np
+import os
 #import random
 
 def paste_subarray(arr1, arr2, start_row, start_col, start_row_arr2, start_col_arr2, end_row_arr2, end_col_arr2):
@@ -16,7 +17,7 @@ def paste_subarray(arr1, arr2, start_row, start_col, start_row_arr2, start_col_a
 
     return arr1
 
-#font = ImageFont.truetype("ARCADECLASSIC.TTF", 16)
+#font = ImageFont.truetype("C:\\Users\\\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ARCADECLASSIC.TTF", 16)
 requestedfile = sys.argv[1]
 leveldata = levelparser.parse_binary_file(requestedfile)
 for obj in leveldata:
@@ -25,7 +26,7 @@ desired_color = (0x92, 0x90, 0xff)
 if(leveldata[0]['backdrop'] in ['Snowy Night', 'Fully Gray Night', 'Night Default',]):
     desired_color = (0x00,0x00,0x00)
 image = Image.new(mode="RGBA", size=((int(leveldata[-1]['total_pages']) + 1) * 256, 240), color=desired_color)
-bg = Image.open(f"backgrounds\\{leveldata[0]['background']}.png")
+bg = Image.open(os.path.join("backgrounds", f"{leveldata[0]['background']}.png"))
 for i in range(0, image.width, bg.width):
     image.paste(bg, (i, 32), bg)
 level_array = []
@@ -84,12 +85,12 @@ for object in leveldata:
         if(object['y_pos'] > 11):
             if object['y_pos'] == 14:
                 #print("yo")
-                for i in range(len(level_array[0]) - object['x_pos']):
+                for i in range(len(level_array[0]) - object['x_pos'] - 1):
                     for j in range(15):
                         if(floor_pattern_names[str(object['obj_size'])][j] == '1'):
-                            level_array[j][object['x_pos'] + i] = '1'
+                            level_array[j][object['x_pos'] + i + 1] = '1'
                         elif int(level_array[j][object['x_pos'] + i]) <= 1:
-                            level_array[j][object['x_pos'] + i] = '0 '
+                            level_array[j][object['x_pos'] + i + 1] = '0 '
             elif(object['y_pos'] == 0b1100):
                 match object['obj_type']:
                     case 0: # HOLE
@@ -120,6 +121,18 @@ for object in leveldata:
                                 level_array[7 + 2][object['x_pos'] + i] = '3'
             elif(object['y_pos'] == 0b1111):
                 match object['obj_type']:
+                    case 4:
+                        values = [
+                            ['0', '0', '5', '6'],
+                            ['0', '0', '7', '8'],
+                            ['11', '13', '14', '8'],
+                            ['12', '15', '16', '8']
+                        ]
+
+                        paste_subarray(level_array, values, 6, object['x_pos'], 0,0,3,3)
+                        for i in range(5):
+                            level_array[6 - i][object['x_pos'] + 2] = 7
+                            level_array[6 - i][object['x_pos'] + 3] = 8
                     case 3: # Stairs
                         max_height = 8
                         for i in range(object['obj_size'] + 1):
@@ -131,11 +144,25 @@ for object in leveldata:
                     case 2:
                         paste_subarray(level_array, castle_tiledata, (object['obj_size'] - 2) + 4, object['x_pos'], 0, 0, object['obj_size'] - 2, 5)
             elif object['y_pos'] == 0b1101:
-                
-                level_array[2][object['x_pos']] = '17'
-                for i in range(9):
-                    level_array[3 + i][object['x_pos']] = '18'
-                level_array[3 + 9][object['x_pos']] = '4'
+                subtype = object['obj_type'] >> 2 & 0b001
+                subsubtype = object['obj_size']
+                #print(bin(subtype), bin(subsubtype), bin(object['obj_type']), bin(object['obj_size']))
+                if(subtype == 1):
+                    match subsubtype:
+                        case 0b0001:
+                            level_array[2][object['x_pos']] = '17'
+                            for i in range(9):
+                                level_array[3 + i][object['x_pos']] = '18'
+                            level_array[3 + 9][object['x_pos']] = '4'
+                        case 0:
+                            values = [
+                                ['0', '0', '5', '6'],
+                                ['0', '0', '7', '8'],
+                                ['11', '13', '14', '8'],
+                                ['12', '15', '16', '8']
+                            ]
+
+                            paste_subarray(level_array, values, 9, object['x_pos'], 0,0,3,3)
 
         elif(object["obj_type"] == 0):
             object['y_pos'] += 2
@@ -148,26 +175,6 @@ for object in leveldata:
             elif object['obj_size'] == 0b1010:
                 try:
                     level_array[object['y_pos']][object['x_pos']] = '10'
-                except:
-                    pass
-            elif object['obj_size'] == 0b1100:
-                try:
-                    #im not sure if this is accurate i did it by memory
-                    values = [
-                        ['5', '6'],
-                        ['7', '8'],
-                        ['14', '8'],
-                        ['16', '8']
-                    ]
-
-                    for dy, row in enumerate(values):
-                        for dx, val in enumerate(row):
-                            level_array[object['y_pos'] + dy][object['x_pos'] + 2 + dx] = val
-
-                    level_array[object['y_pos'] + 2][object['x_pos']] = '11'
-                    level_array[object['y_pos'] + 3][object['x_pos']] = '12'
-                    level_array[object['y_pos'] + 2][object['x_pos'] + 1] = '12'
-                    level_array[object['y_pos'] + 3][object['x_pos'] + 1] = '15'
                 except:
                     pass
             elif object['obj_size'] == 0b1001:
@@ -197,9 +204,11 @@ for object in leveldata:
                         level_array[object['y_pos']][object['x_pos'] + 1] = '6'
                     for i in range(object['obj_size']):
                         if(object['y_pos'] + 1 + i < len(level_array)):
-                            level_array[object['y_pos'] + i + 1][object['x_pos']] = '7'
+                            if(int(level_array[object['y_pos'] + i + 1][object['x_pos']]) == 0):
+                                level_array[object['y_pos'] + i + 1][object['x_pos']] = '7'
                         if(object['x_pos'] + 1 < len(level_array[0]) and object['y_pos'] + 1 + i < len(level_array)):
-                            level_array[object['y_pos'] + i + 1][object['x_pos'] + 1] = '8'
+                            if(int(level_array[object['y_pos'] + i + 1][object['x_pos'] + 1]) == 0):
+                                level_array[object['y_pos'] + i + 1][object['x_pos'] + 1] = '8'
                 case 4: # Coins HOR ROW
                     for i in range(object['obj_size'] + 1):
                         if(object['x_pos'] + i < len(level_array[0])):
