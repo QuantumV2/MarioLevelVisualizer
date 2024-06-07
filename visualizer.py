@@ -341,6 +341,6 @@ if sys.platform != 'emscripten':
 else:
     import io
     buffered = io.BytesIO()
-    out_image.save(buffered, format="PNG")
+    image.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
     img_str
