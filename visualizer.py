@@ -13,7 +13,7 @@ import numpy as np
 import os
 import random
 
-img_str = ""
+img_str = "test"
 
 def paste_subarray(arr1, arr2, start_row, start_col, start_row_arr2, start_col_arr2, end_row_arr2, end_col_arr2):
     rows_arr2 = end_row_arr2 - start_row_arr2 + 1
@@ -342,6 +342,7 @@ if sys.platform != 'emscripten':
     image.show()
     image.save('output.png')
 else:
+    global img_str
     import io
     import base64
     buffered = io.BytesIO()
