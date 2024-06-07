@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pyodide PIL Example</title>
+</head>
+
+<body>
+    <input type="file" id="fileInput">
+    <input type="number" id="offsetInput" placeholder="Offset" value="0">
+    <input type="number" id="bytesToReadInput" placeholder="Bytes to Read" value="-1">
+    <button onclick="runPython()">Run</button>
+    <img id="outputImage" />
+
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.0/full/pyodide.js"></script>
+    <script type="text/javascript">
+        async function runPython() {
+            let pyodide = await loadPyodide();
+            const folders = ['/backgrounds/', '/chunkids/'];
+            await pyodide.loadPackage('numpy');
+            await pyodide.loadPackage('pillow');
+            async function fetchFilesFromFolder(folder) {
+                const response = await fetch(folder);
+                const text = await response.text();
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+
+                return [...doc.querySelectorAll('a')]
+                    .map(a => folder + a.href.split('/')[a.href.split('/').length - 1])
+                    
+            }
+
+            async function fetchAndWriteFiles(files) {
+                for (const file of files) {
+                    const fileResponse = await fetch(file);
+                    const buffer = await fileResponse.arrayBuffer();
+                    const pathInVFS = file;
+                    pyodide.FS.writeFile("/home/pyodide" + pathInVFS, new Uint8Array(buffer));
+                }
+            }
+
+            // fetch and write files from all folders
+            for (const folder of folders) {
+                pyodide.FS.mkdir("/home/pyodide" + folder)
+                const files = await fetchFilesFromFolder(folder);
+                await fetchAndWriteFiles(files);
+            }
+            // read values from inputs
+            const fileElement = document.getElementById('fileInput');
+            const offset = document.getElementById('offsetInput').value;
+            const bytesToRead = document.getElementById('bytesToReadInput').value;
+            const file = fileElement.files[0];
+
+            if (file) {
+                // read file content
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const fileContent = event.target.result;
+                    let response = await fetch('https://raw.githubusercontent.com/QuantumV2/MarioLevelVisualizer/main/levelparser.py');
+                    let pythonCode = await response.text();
+                    let response1 = await fetch('https://raw.githubusercontent.com/QuantumV2/MarioLevelVisualizer/main/visualizer.py');
+                    pythonCode += await response1.text();
+                    pythonCode = pythonCode.replace("\'_pyodide_arg0_replace_\'", `"${btoa(fileContent)}"`).replace("\'_pyodide_arg1_replace_\'", parseInt(offset)).replace("\'_pyodide_arg2_replace_\'", parseInt(bytesToRead)).replace("import levelparser", "").replace("levelparser.", "").replace("from levelparser import floor_pattern_names", "pass").replace("levelparser.parse_binary_file", "parse_binary_file")
+
+                    // pass content to python
+                    pyodide.runPythonAsync(pythonCode)
+                    console.log(pyodide.globals.toJs())
+                    document.getElementById('outputImage').src = `data:image/png;base64,${pyodide.globals.get('img_str').toJs()}`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+
+</html>
