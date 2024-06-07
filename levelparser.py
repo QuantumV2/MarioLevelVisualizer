@@ -1,3 +1,4 @@
+import sys
 floor_pattern_names = {
     '0': '000000000000000',
     '1': '000000000000011',
@@ -103,7 +104,27 @@ def parse_binary_file(file_path, offset = 0, bytestoread = -1):
             'raw_data': ["{:02x}".format(data[0]), "{:02x}".format(data[1])]
         })
 
-    with open(file_path, 'rb') as f:
+    if sys.platform != 'emscripten':
+        with open(file_path, 'rb') as f:
+            f.read(offset)
+            if(len(level_data) <= 0):
+                bytesread += 2
+                header = f.read(2)
+                if len(header) < 2:
+                    raise ValueError("File is too short to contain a header")
+                parse_header(header)
+            
+            while True:
+                bytesread += 2
+                data = f.read(2)
+                if len(data) < 2 or (bytesread >= bytestoread and bytestoread > 0) : #or data[0] == 0xFD:
+                    break
+                parse_object(data)
+            level_data.append({'total_pages': pagesencountered})
+    else:
+        import base64
+        from io import BytesIO
+        f = BytesIO(base64.decode(file_path))
         f.read(offset)
         if(len(level_data) <= 0):
             bytesread += 2
@@ -111,7 +132,7 @@ def parse_binary_file(file_path, offset = 0, bytestoread = -1):
             if len(header) < 2:
                 raise ValueError("File is too short to contain a header")
             parse_header(header)
-        
+
         while True:
             bytesread += 2
             data = f.read(2)

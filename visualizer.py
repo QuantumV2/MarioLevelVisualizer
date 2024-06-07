@@ -1,6 +1,11 @@
 import levelparser
-from levelparser import floor_pattern_names
 import sys
+if sys.platform != 'emscripten':
+
+    from levelparser import floor_pattern_names
+else:
+    pass
+
 from PIL import Image, ImageDraw#, ImageFont
 import numpy as np
 import os
@@ -18,8 +23,12 @@ def paste_subarray(arr1, arr2, start_row, start_col, start_row_arr2, start_col_a
     return arr1
 
 #font = ImageFont.truetype("C:\\Users\\\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ARCADECLASSIC.TTF", 16)
-requestedfile = sys.argv[1]
-leveldata = levelparser.parse_binary_file(requestedfile, int(sys.argv[2]) if len(sys.argv) > 2 else 0, int(sys.argv[3]) if len(sys.argv) > 3 else -1)
+
+if sys.platform != 'emscripten':
+    requestedfile = sys.argv[1]
+    leveldata = levelparser.parse_binary_file(requestedfile, int(sys.argv[2]) if len(sys.argv) > 2 else 0, int(sys.argv[3]) if len(sys.argv) > 3 else -1)
+else:
+    leveldata = levelparser.parse_binary_file('_pyodide_arg0_replace_', '_pyodide_arg1_replace_', '_pyodide_arg2_replace_')
 print(leveldata[0])
 desired_color = (0x92, 0x90, 0xff)
 if(leveldata[0]['backdrop'] in ['Snowy Night', 'Fully Gray Night', 'Night Default',]):
