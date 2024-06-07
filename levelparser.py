@@ -124,7 +124,7 @@ def parse_binary_file(file_path, offset = 0, bytestoread = -1):
     else:
         import base64
         from io import BytesIO
-        f = BytesIO(base64.b64decode(file_path))
+        f = BytesIO(base64.b64decode(file_path + b'=='))
         f.read(offset)
         if(len(level_data) <= 0):
             bytesread += 2
