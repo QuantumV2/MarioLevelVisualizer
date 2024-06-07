@@ -13,6 +13,8 @@ import numpy as np
 import os
 import random
 
+img_str = ""
+
 def paste_subarray(arr1, arr2, start_row, start_col, start_row_arr2, start_col_arr2, end_row_arr2, end_col_arr2):
     rows_arr2 = end_row_arr2 - start_row_arr2 + 1
     cols_arr2 = end_col_arr2 - start_col_arr2 + 1
@@ -345,4 +347,3 @@ else:
     buffered = io.BytesIO()
     image.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue())
-    img_str
