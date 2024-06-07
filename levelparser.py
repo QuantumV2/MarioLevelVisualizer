@@ -16,7 +16,8 @@ floor_pattern_names = {
     '14':'001000111100011',
     '15':'001111111111111',
 }
-def parse_binary_file(file_path):
+def parse_binary_file(file_path, offset = 0, bytestoread = -1):
+    bytesread = 0
     level_data = []
     pagesencountered = 0
 
@@ -103,15 +104,18 @@ def parse_binary_file(file_path):
         })
 
     with open(file_path, 'rb') as f:
+        f.read(offset)
         if(len(level_data) <= 0):
+            bytesread += 2
             header = f.read(2)
             if len(header) < 2:
                 raise ValueError("File is too short to contain a header")
             parse_header(header)
         
         while True:
+            bytesread += 2
             data = f.read(2)
-            if len(data) < 2: #or data[0] == 0xFD:
+            if len(data) < 2 or (bytesread >= bytestoread and bytestoread > 0) : #or data[0] == 0xFD:
                 break
             parse_object(data)
         level_data.append({'total_pages': pagesencountered})
