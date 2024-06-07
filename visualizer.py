@@ -1,5 +1,6 @@
 import levelparser
 import sys
+
 if sys.platform != 'emscripten':
 
     from levelparser import floor_pattern_names
@@ -333,6 +334,13 @@ for row in range(len(level_array)):
 mario = Image.open('chunkids/mario.png')
 image.paste(mario.convert("RGBA"), (24 + 16, (int(leveldata[0]['start_location_y']) * 16) + 16), mario.convert("RGBA"))
     
+if sys.platform != 'emscripten':
 
-image.show()
-image.save('output.png')
+    image.show()
+    image.save('output.png')
+else:
+    import io
+    buffered = io.BytesIO()
+    out_image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
+    img_str
