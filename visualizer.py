@@ -343,7 +343,6 @@ if sys.platform != 'emscripten':
     image.show()
     image.save('output.png')
 else:
-    global img_str
     import io
     import base64
     buffered = io.BytesIO()
