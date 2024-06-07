@@ -104,7 +104,7 @@ for object in leveldata:
                             if check_obj != leveldata[0] and check_obj != leveldata[-1]:
                                 if check_obj['y_pos'] == 14:
                                 
-                                    if ((check_obj['obj_type'] >> 2) & 0b001 == 1) and check_obj['x_pos'] > object['x_pos'] and check_obj['obj_size'] & 0b0111 == 0b000 and x_stop == image.width:
+                                    if ((check_obj['obj_type'] >> 2) & 0b001 == 1) and check_obj['x_pos'] > object['x_pos'] and check_obj['obj_size'] & 0b0111 != object['obj_size'] & 0b0111 and x_stop == image.width:
                                         x_stop = ((check_obj['x_pos'] + 1) * 16)
                         bg = Image.open(os.path.join("backgrounds", "CastleWalls.png"))
                         for i in range(x_start, x_stop, 16):
