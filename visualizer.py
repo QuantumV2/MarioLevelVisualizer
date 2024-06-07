@@ -1,5 +1,6 @@
 import levelparser
 import sys
+from pathlib import Path
 
 if sys.platform != 'emscripten':
 
@@ -36,7 +37,7 @@ if(leveldata[0]['backdrop'] in ['Snowy Night', 'Fully Gray Night', 'Night Defaul
     desired_color = (0x00,0x00,0x00)
 
 image = Image.new(mode="RGBA", size=((int(leveldata[-1]['total_pages']) + 2) * 256, 240), color=desired_color)
-bg = Image.open(os.path.join("backgrounds", f"{leveldata[0]['background']}.png"))
+bg = Image.open(Path("backgrounds", f"{leveldata[0]['background']}.png"))
 for i in range(0, image.width, bg.width):
     image.paste(bg, (i, 32), bg)
 level_array = []
@@ -46,45 +47,45 @@ for i in range(15):
 tile_size = 16
 
 tile_images = {
-    0: Image.open('chunkids/0.png'),
-    1: Image.open('chunkids/1.png'),
-    2: Image.open('chunkids/2.png'),
-    3: Image.open('chunkids/3.png'),
-    4: Image.open('chunkids/4.png'),
-    5: Image.open('chunkids/5.png'),
-    6: Image.open('chunkids/6.png'),
-    7: Image.open('chunkids/7.png'),
-    8: Image.open('chunkids/8.png'),
-    9: Image.open('chunkids/9.png'),
-    9: Image.open('chunkids/9.png'),
-    10: Image.open('chunkids/10.png'),
-    11: Image.open('chunkids/11.png'),
-    12: Image.open('chunkids/12.png'),
-    13: Image.open('chunkids/13.png'),
-    14: Image.open('chunkids/14.png'),
-    15: Image.open('chunkids/15.png'),
-    16: Image.open('chunkids/16.png'),
-    17: Image.open('chunkids/17.png'),
-    18: Image.open('chunkids/18.png'),
-    19: Image.open('chunkids/19.png'),
-    20: Image.open('chunkids/20.png'),
-    21: Image.open('chunkids/21.png'),
-    22: Image.open('chunkids/22.png'),
-    23: Image.open('chunkids/23.png'),
-    24: Image.open('chunkids/24.png'),
-    25: Image.open('chunkids/25.png'),
-    26: Image.open('chunkids/26.png'),
-    27: Image.open('chunkids/27.png'),
-    28: Image.open('chunkids/28.png'),
-    29: Image.open('chunkids/29.png'),
-    30: Image.open('chunkids/30.png'),
-    31: Image.open('chunkids/31.png'),
-    32: Image.open('chunkids/32.png'),
-    33: Image.open('chunkids/33.png'),
-    34: Image.open('chunkids/34.png'),
-    35: Image.open('chunkids/35.png'),
-    36: Image.open('chunkids/36.png'),
-    37: Image.open('chunkids/37.png'),
+    0:  Image.open(Path('chunkids/0.png' )),
+    1:  Image.open(Path('chunkids/1.png' )),
+    2:  Image.open(Path('chunkids/2.png' )),
+    3:  Image.open(Path('chunkids/3.png' )),
+    4:  Image.open(Path('chunkids/4.png' )),
+    5:  Image.open(Path('chunkids/5.png' )),
+    6:  Image.open(Path('chunkids/6.png' )),
+    7:  Image.open(Path('chunkids/7.png' )),
+    8:  Image.open(Path('chunkids/8.png' )),
+    9:  Image.open(Path('chunkids/9.png' )),
+    9:  Image.open(Path('chunkids/9.png' )),
+    10: Image.open(Path('chunkids/10.png')),
+    11: Image.open(Path('chunkids/11.png')),
+    12: Image.open(Path('chunkids/12.png')),
+    13: Image.open(Path('chunkids/13.png')),
+    14: Image.open(Path('chunkids/14.png')),
+    15: Image.open(Path('chunkids/15.png')),
+    16: Image.open(Path('chunkids/16.png')),
+    17: Image.open(Path('chunkids/17.png')),
+    18: Image.open(Path('chunkids/18.png')),
+    19: Image.open(Path('chunkids/19.png')),
+    20: Image.open(Path('chunkids/20.png')),
+    21: Image.open(Path('chunkids/21.png')),
+    22: Image.open(Path('chunkids/22.png')),
+    23: Image.open(Path('chunkids/23.png')),
+    24: Image.open(Path('chunkids/24.png')),
+    25: Image.open(Path('chunkids/25.png')),
+    26: Image.open(Path('chunkids/26.png')),
+    27: Image.open(Path('chunkids/27.png')),
+    28: Image.open(Path('chunkids/28.png')),
+    29: Image.open(Path('chunkids/29.png')),
+    30: Image.open(Path('chunkids/30.png')),
+    31: Image.open(Path('chunkids/31.png')),
+    32: Image.open(Path('chunkids/32.png')),
+    33: Image.open(Path('chunkids/33.png')),
+    34: Image.open(Path('chunkids/34.png')),
+    35: Image.open(Path('chunkids/35.png')),
+    36: Image.open(Path('chunkids/36.png')),
+    37: Image.open(Path('chunkids/37.png')),
 }
 castle_tiledata = [
     [00,19,19,19,00],
@@ -116,7 +117,7 @@ for object in leveldata:
                                 
                                     if ((check_obj['obj_type'] >> 2) & 0b001 == 1) and check_obj['x_pos'] > object['x_pos'] and check_obj['obj_size'] & 0b0111 != object['obj_size'] & 0b0111 and x_stop == image.width:
                                         x_stop = ((check_obj['x_pos'] + 1) * 16)
-                        bg = Image.open(os.path.join("backgrounds", "CastleWalls.png"))
+                        bg = Image.open(Path("backgrounds", "CastleWalls.png"))
                         for i in range(x_start, x_stop, 16):
                             image.paste(bg, (i, 32), bg)
                 else:
@@ -331,7 +332,7 @@ for row in range(len(level_array)):
         image.paste(tile_img.convert("RGBA"), (x0, y0), tile_img.convert("RGBA"))
         #if object != leveldata[0] and object != leveldata[-1]:
             #img1.text((object['x_pos'] * 16, (object['y_pos'] if object['y_pos'] < 12 else 0) * 16),f"{object['raw_data'][0] + object['raw_data'][1] }",(random.randrange(0, 255),random.randrange(0, 255),random.randrange(0, 255)),font=font)
-mario = Image.open('chunkids/mario.png')
+mario = Image.open(Path('chunkids/mario.png'))
 image.paste(mario.convert("RGBA"), (24 + 16, (int(leveldata[0]['start_location_y']) * 16) + 16), mario.convert("RGBA"))
     
 if sys.platform != 'emscripten':
