@@ -28,7 +28,14 @@
             await pyodide.loadPackage('numpy');
             await pyodide.loadPackage('pillow');
             async function fetchFilesFromFolder(folder) {
-                const response = await fetch(folder);
+                if (window.location.href.indexOf(".github.io") <= -1)
+                {
+                    const response = await fetch(folder);
+                }
+                else
+                {
+                    const response = await fetch("MarioLevelVisualizer" + folder);
+                }
                 const text = await response.text();
 
                 const parser = new DOMParser();
