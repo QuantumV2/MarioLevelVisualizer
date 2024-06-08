@@ -346,5 +346,4 @@ else:
     import base64
     buffered = io.BytesIO()
     image.save(buffered, format="PNG")
-    img_str = base64.b64encode(buffered.getvalue())
-    print(img_str)
+    img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
