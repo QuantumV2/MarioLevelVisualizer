@@ -288,8 +288,7 @@ for object in leveldata:
                             if(object['x_pos'] + i < len(level_array[0])):
                                 level_array[object['y_pos']][object['x_pos'] + i] = '2'
                     case 7: # Pipe 
-                        if(object['obj_size'] > 10):
-                            object['obj_size'] = object['obj_size'] & 0b0111
+                        object['obj_size'] = object['obj_size'] & 0b0111
                         level_array[object['y_pos']][object['x_pos']] = '5'
                         if(object['x_pos'] + 1 < len(level_array[0])):
                             level_array[object['y_pos']][object['x_pos'] + 1] = '6'
