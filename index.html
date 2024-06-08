@@ -13,6 +13,7 @@
     <button id="upload-btn-styled" class="upld-btn">Upload File</button>
     <input class="slider"type="number" id="offsetInput" placeholder="Offset" value="0">
     <input class="slider" type="number" id="bytesToReadInput" placeholder="Bytes to Read" value="-1">
+    <button id="download" onclick="download()"style="transform: translate(-50%, -520%);display: none;">Download Image(s)</button>
     <button onclick="runPython()">Run</button>
     <img id="outputImage" style="width:90vw;transform: translate(0%, 25%);"/>
 
@@ -78,6 +79,10 @@
                 };
                 reader.readAsDataURL(file);
             }
+        }
+        function download()
+        {
+            window.location.href = document.getElementById('outputImage').src;
         }
     </script>
 </body>
