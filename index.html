@@ -84,7 +84,11 @@
         }
         function download()
         {
-            window.location.href = document.getElementById('outputImage').src;
+            const downloadLink = document.createElement("a");
+            downloadLink.style='display:none'
+            downloadLink.href = document.getElementById('outputImage').src;
+            downloadLink.download = "mariolevel.png";
+            downloadLink.click();
         }
     </script>
 </body>
