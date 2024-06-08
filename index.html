@@ -81,6 +81,8 @@
                     pyodide.runPython(pythonCode)
 
                     document.getElementById('outputImage').src = `data:image/png;base64,${pyodide.globals.get('img_str')}`
+                    document.getElementById("download").style.display = 'block'; 
+
                     
 
                 };
