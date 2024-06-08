@@ -56,17 +56,19 @@
                 // read file content
                 const reader = new FileReader();
                 reader.onload = async (event) => {
-                    const fileContent = event.target.result;
+                    const fileContent = event.target.result.replace("data:application/octet-stream;base64,", "");
                     let response = await fetch('https://raw.githubusercontent.com/QuantumV2/MarioLevelVisualizer/main/levelparser.py');
                     let pythonCode = await response.text();
                     let response1 = await fetch('https://raw.githubusercontent.com/QuantumV2/MarioLevelVisualizer/main/visualizer.py');
                     pythonCode += await response1.text();
-                    pythonCode = pythonCode.replace("\'_pyodide_arg0_replace_\'", `"${btoa(fileContent)}"`).replace("\'_pyodide_arg1_replace_\'", parseInt(offset)).replace("\'_pyodide_arg2_replace_\'", parseInt(bytesToRead)).replace("import levelparser", "").replace("levelparser.", "").replace("from levelparser import floor_pattern_names", "pass").replace("levelparser.parse_binary_file", "parse_binary_file")
+                    pythonCode = pythonCode.replace("\'_pyodide_arg0_replace_\'", `"${(fileContent)}"`).replace("\'_pyodide_arg1_replace_\'", parseInt(offset)).replace("\'_pyodide_arg2_replace_\'", parseInt(bytesToRead)).replace("import levelparser", "").replace("levelparser.", "").replace("from levelparser import floor_pattern_names", "pass").replace("levelparser.parse_binary_file", "parse_binary_file")
 
                     // pass content to python
-                    pyodide.runPythonAsync(pythonCode)
-                    console.log(pyodide.globals.toJs())
-                    document.getElementById('outputImage').src = `data:image/png;base64,${pyodide.globals.get('img_str').toJs()}`;
+                    pyodide.runPython(pythonCode)
+                    console.log(fileContent),
+                    document.getElementById('outputImage').src = `data:image/png;base64,${pyodide.globals.get('img_str')}`
+                    
+
                 };
                 reader.readAsDataURL(file);
             }
