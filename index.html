@@ -24,18 +24,11 @@
         });
         async function runPython() {
             let pyodide = await loadPyodide();
-            const folders = ['/backgrounds/', '/chunkids/'];
+            const folders = ['backgrounds/', 'chunkids/'];
             await pyodide.loadPackage('numpy');
             await pyodide.loadPackage('pillow');
             async function fetchFilesFromFolder(folder) {
-                if (window.location.href.indexOf(".github.io") <= -1)
-                {
-                    const response = await fetch(folder);
-                }
-                else
-                {
-                    const response = await fetch("MarioLevelVisualizer" + folder);
-                }
+                const response = await fetch(folder);
                 const text = await response.text();
 
                 const parser = new DOMParser();
@@ -51,7 +44,7 @@
                     const fileResponse = await fetch(file);
                     const buffer = await fileResponse.arrayBuffer();
                     const pathInVFS = file;
-                    pyodide.FS.writeFile("/home/pyodide" + pathInVFS, new Uint8Array(buffer));
+                    pyodide.FS.writeFile("/home/pyodide/" + pathInVFS, new Uint8Array(buffer));
                 }
             }
 
