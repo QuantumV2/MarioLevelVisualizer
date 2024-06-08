@@ -43,14 +43,14 @@
                 for (const file of files) {
                     const fileResponse = await fetch(file);
                     const buffer = await fileResponse.arrayBuffer();
-                    const pathInVFS = file;
-                    pyodide.FS.writeFile("/home/pyodide/" + pathInVFS, new Uint8Array(buffer));
+                    const pathInVFS = "/" + file;
+                    pyodide.FS.writeFile("/home/pyodide" + pathInVFS, new Uint8Array(buffer));
                 }
             }
 
             // fetch and write files from all folders
             for (const folder of folders) {
-                pyodide.FS.mkdir("/home/pyodide" + folder)
+                pyodide.FS.mkdir("/home/pyodide/" + folder)
                 const files = await fetchFilesFromFolder(folder);
                 await fetchAndWriteFiles(files);
             }
