@@ -33,7 +33,8 @@ if sys.platform != 'emscripten':
     leveldata = levelparser.parse_binary_file(requestedfile, int(sys.argv[2]) if len(sys.argv) > 2 else 0, int(sys.argv[3]) if len(sys.argv) > 3 else -1)
 else:
     leveldata = levelparser.parse_binary_file('_pyodide_arg0_replace_', '_pyodide_arg1_replace_', '_pyodide_arg2_replace_')
-print(leveldata[0])
+for object in leveldata:
+    print(object)
 desired_color = (0x92, 0x90, 0xff)
 if(leveldata[0]['backdrop'] in ['Snowy Night', 'Fully Gray Night', 'Night Default',]):
     desired_color = (0x00,0x00,0x00)
@@ -88,6 +89,7 @@ tile_images = {
     35: Image.open(Path('chunkids/35.png')),
     36: Image.open(Path('chunkids/36.png')),
     37: Image.open(Path('chunkids/37.png')),
+    38: Image.open(Path('chunkids/38.png')),
 }
 castle_tiledata = [
     [00,19,19,19,00],
@@ -322,10 +324,13 @@ for object in leveldata:
 for row in range(len(level_array)):
     
     for col in range(len(level_array[row])):
-        tile_type = level_array[row][col]
+        tile_type = int(level_array[row][col])
         if(int(tile_type) == 0):
             continue
-        tile_img = tile_images[int(tile_type)]
+        if(tile_type == 1):
+            tile_img = tile_images[38 if leveldata[0]['tile_and_special_platform'] == 'Cloud Block, Green Pipe, Tree' else 1]
+        else:
+            tile_img = tile_images[int(tile_type)]
         x0 = col * tile_size
         y0 = row * tile_size
         img1 = ImageDraw.Draw(image)
